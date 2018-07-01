@@ -1,55 +1,50 @@
-#The following functions cache the inverse of an invertible square matrix (determinant != 0), 
-#then return the inverse. Caching saves time for very large matrices.
+#The first function, makeCacheMatrix, creates a special "vector" which is really just a list containing a function to:
+#set value of matrix
+#get value of matrix
+#set value of inverse of matrix
+#get value of inverse of matrix
 
-
-#the first function, makeCacheMatrix(), caches the inverse
-
-#Take matrix as input:
 makeCacheMatrix <- function(x = matrix()) {
-  invMatrix <- NULL
+  i <- NULL
   
   #set value of matrix
-  setMatrix <- function(y) {
+  set <- function(y) {
     x <<- y
-    inv <<- NULL
+    i <<- NULL
   }
   
   #Get the value of the matrix
-  getMatrix = function() x
+  get <- function() x
   
   #set the value of inverse matrix
-  setInverse = function(inverse) invMatrix <<- inverse 
+  setInverse <- function(inverse) i <<- inverse 
   
   #get value of inverse matrix
-  getInverse = function() invMatrix
+  getInverse <- function() i
   
-  
-  list(setMatrix=setMatrix, 
-       getMatrix=getMatrix, 
-       setInverse=setInverse, 
-       getInverse=getInverse)
+  #return vector
+  list(set=set, get=get, setInverse=setInverse, getInverse=getInverse)
 }
 
 
 
-## This function takes the output of the previous matrix as an input and checks if the new inverse matrix has any value in it.
-#if the original matrix is empty, it gets the data from the original matrix and finds the inverse using solve() function
+#This function computes the inverse of the matrix created with the above function. 
+#First it checks to see if the inverse has already been calculated.
+#if so, it gets the inverse and skips the computation. 
+#otherwise, it computes the inverse of the matrix and sets the value of the inverse matrix in the cache via the setInverse function
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
-  invMatrix <- x$getInverse()
+  i <- x$getInverse()
   #if inverse matrix is not NULL
-  if(!is.null(invMatrix)){
+  if(!is.null(i)){
     message("getting cached matrix")
-    return(invMatrix)
+    return(i)
   }
   #if inverse matrix IS NULL then get original matrix data
-  x <- x$getMatrix()
+  matrix <- x$get()
   
   #use solve function to invert matrix
-  inv <- solve(x, ...)
-  x$setInverse(inv)
-  return(inv) #return inverse matrix
+  i <- solve(matrix, ...)
+  x$setInverse(i)
+  i #return inverse matrix
 }
-
-
